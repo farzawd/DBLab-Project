@@ -9,6 +9,8 @@ use App\Http\Controllers\Controller;
 
 use App\Task;
 use App\Repositories\TaskRepository;
+use DB;
+
 
 class TaskController extends Controller
 {
@@ -59,9 +61,11 @@ class TaskController extends Controller
 
         $request->user()->tasks()->create([
             'name' => $request->name,
+            'status'=>'todo',
+            'dueDate'=>$request->date,
         ]);
 
-        return redirect('/tasks');
+      return redirect('/tasks');
     }
 
     /**
@@ -76,6 +80,24 @@ class TaskController extends Controller
         $this->authorize('destroy', $task);
 
         $task->delete();
+
+        return redirect('/tasks');
+    }
+
+
+    public function done(Request $request, Task $task)
+    {
+        $task->status = 'done';
+        $task->save();
+
+        return redirect('/tasks');
+    }
+
+
+    public function todo(Request $request, Task $task)
+    {
+        $task->status = 'todo';
+        $task->save();
 
         return redirect('/tasks');
     }
